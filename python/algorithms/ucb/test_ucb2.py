@@ -1,4 +1,8 @@
-execfile("core.py")
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent.parent))  # Go up 3 levels
+import numpy as np
+from core import *
 from algorithms.ucb.ucb2 import *
 import random
 

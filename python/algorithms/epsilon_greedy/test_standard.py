@@ -2,13 +2,12 @@ import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent.parent))  # Go up 3 levels
 import numpy as np
-
 from core import *
 
 import random
 
 random.seed(1)
-probs = [0.1, 0.1, 0.1, 0.1, 0.9]  # Changed from means to probs for clarity
+probs = [0.1, 0.1, 0.1, 0.1, 0.9] 
 n_arms = len(probs)
 random.shuffle(probs)
 arms = [BernoulliArm(p) for p in probs]
@@ -26,12 +25,12 @@ with open("algorithms/epsilon_greedy/standard_results.tsv", "w") as f_detail, \
 
     # Write headers
     f_detail.write("e\tsim\tt\tarm\treward\tcum_reward\n")
-    f_summary.write("e\tsim\ttot_pct\tavg_pct\n")
+    f_summary.write("e\tsim\treg_pct\n")
 
     for epsilon in [0.1, 0.2, 0.3, 0.4, 0.5]:
         algo = EpsilonGreedy(epsilon, [], [])
         algo.initialize(n_arms)
-        results = test_algorithm(algo, arms, num_sim, 250)
+        results = test_algorithm(algo, arms, num_sim, 5000)
         
         # Track regret per simulation
         sim_regrets = []
@@ -44,7 +43,7 @@ with open("algorithms/epsilon_greedy/standard_results.tsv", "w") as f_detail, \
             sim_regrets.append(regret_pct)
             
             # Write to summary file per simulation
-            f_summary.write(f"{epsilon}\t{sim}\t{regret_pct:.2f}\t{np.mean(sim_regrets):.2f}\n")
+            f_summary.write(f"{epsilon}\t{sim}\t{regret_pct:.2f}\n")
 
         # Write detailed results
         for i in range(len(results[0])):

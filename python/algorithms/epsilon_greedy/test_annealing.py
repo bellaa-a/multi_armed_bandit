@@ -19,20 +19,17 @@ print(f"Best arm is {best_arm_index} (p={best_arm_prob})")
 
 num_sim = 10
 
-# Create output directory
-os.makedirs("algorithms/epsilon_greedy", exist_ok=True)
-
 with open("algorithms/epsilon_greedy/annealing_regret.tsv", "w") as f_summary, \
      open("algorithms/epsilon_greedy/annealing_results.tsv", "w") as f_detail:
 
     # Write headers (no epsilon column)
-    f_summary.write("sim\ttot_pct\tavg_pct\n")
+    f_summary.write("sim\treg_pct\n")
     f_detail.write("sim\tt\tarm\treward\tcum_reward\n")
 
     # Run annealing algorithm
     algo = AnnealingEpsilonGreedy([], [])
     algo.initialize(n_arms)
-    results = test_algorithm(algo, arms, num_sim, 250)
+    results = test_algorithm(algo, arms, num_sim, 5000)
     
     sim_regrets = []
     
@@ -43,10 +40,10 @@ with open("algorithms/epsilon_greedy/annealing_regret.tsv", "w") as f_summary, \
         regret_pct = max(0, (optimal_reward - actual_reward) / optimal_reward * 100)
         sim_regrets.append(regret_pct)
         
-        # Write regret summary (no epsilon column)
-        f_summary.write(f"{sim}\t{regret_pct:.2f}\t{np.mean(sim_regrets):.2f}\n")
+        # Write regret summary 
+        f_summary.write(f"{sim}\t{regret_pct:.2f}\n")
 
-    # Write detailed results (no epsilon column)
+    # Write detailed results 
     for i in range(len(results[0])):
         f_detail.write("\t".join([
             str(results[0][i]),  # sim_num
