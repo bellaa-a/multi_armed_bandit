@@ -7,46 +7,60 @@ from core import *
 import random
 import os
 
-random.seed(1)
-probs = [0.1, 0.1, 0.1, 0.1, 0.9]
-n_arms = len(probs)
-random.shuffle(probs)
-arms = [BernoulliArm(p) for p in probs]
-
-# Get best arm's probability
-best_arm_index = ind_max(probs)
-best_arm_prob = probs[best_arm_index]
-print(f"Best arm is {best_arm_index} (p={best_arm_prob})")
-
-num_sim = 10
-horizon = 500
-
-# Create output directory
-os.makedirs("algorithms/ucb", exist_ok=True)
-
-with open("algorithms/ucb/ucb1_results.tsv", "w") as f_detail, \
-     open("algorithms/ucb/ucb1_regret.tsv", "w") as f_summary:
-
-    # Write headers
-    f_detail.write("sim\tt\tarm\treward\tcum_reward\n")
-    f_summary.write("sim\treg_pct\n")
-
-    # Run UCB1 algorithm
-    algo = UCB1([], [])
-    algo.initialize(n_arms)
-    results = test_algorithm(algo, arms, num_sim, horizon)
+def run_ucb1(seed=1, num_sim=10, horizon=500):
+    """
+    Run UCB1 experiment with file outputs and return average regret.
     
-    # Track regret per simulation
-    for sim in range(1, num_sim + 1):
-        sim_mask = [s == sim for s in results[0]]  # Filter current sim
-        optimal_reward = best_arm_prob * sum(sim_mask)
-        actual_reward = sum(r for r, m in zip(results[3], sim_mask) if m)
-        regret_pct = max(0, (optimal_reward - actual_reward) / optimal_reward * 100)
+    Args:
+        seed (int): Random seed
+        num_sim (int): Number of simulations
+        horizon (int): Time horizon
         
-        # Write regret for EVERY simulation
-        f_summary.write(f"{sim}\t{regret_pct:.2f}\n")
+    Returns:
+        float: Average regret percentage across simulations
+    """
+    random.seed(seed)
+    probs = [0.1, 0.1, 0.1, 0.1, 0.9]
+    n_arms = len(probs)
+    random.shuffle(probs)
+    arms = [BernoulliArm(p) for p in probs]
 
-    # Write detailed results
-    for i in range(len(results[0])):
-        f_detail.write("\t".join([str(results[j][i]) for j in range(len(results))]))
-        f_detail.write("\n")
+    # Get best arm
+    best_arm_index = ind_max(probs)
+    best_arm_prob = probs[best_arm_index]
+
+    # Ensure output directory exists
+    os.makedirs("algorithms/ucb", exist_ok=True)
+
+    total_regret = 0.0
+    
+    with open("algorithms/ucb/ucb1_results.tsv", "w") as f_detail, \
+         open("algorithms/ucb/ucb1_regret.tsv", "w") as f_summary:
+
+        # Write headers
+        f_detail.write(f"Best arm is {best_arm_index} (p={best_arm_prob})\n")
+        f_detail.write("sim\tt\tarm\treward\tcum_reward\n")
+        f_summary.write("sim\treg_pct\n")
+
+        # Run algorithm
+        algo = UCB1([], [])
+        algo.initialize(n_arms)
+        results = test_algorithm(algo, arms, num_sim, horizon)
+        
+        # Process results
+        for sim in range(1, num_sim + 1):
+            sim_mask = [s == sim for s in results[0]]
+            optimal = best_arm_prob * sum(sim_mask)
+            actual = sum(r for r, m in zip(results[3], sim_mask) if m)
+            regret_pct = max(0, (optimal - actual) / optimal * 100)
+            total_regret += regret_pct
+            
+            # Write to summary file
+            f_summary.write(f"{sim}\t{regret_pct:.2f}\n")
+
+        # Write all detailed results
+        for i in range(len(results[0])):
+            f_detail.write("\t".join(str(results[j][i]) for j in range(len(results))))
+            f_detail.write("\n")
+
+    return total_regret / num_sim  # Average regret percentage

@@ -16,7 +16,6 @@ arms = [BernoulliArm(p) for p in probs]
 # Get best arm
 best_arm_index = ind_max(probs)
 best_arm_prob = probs[best_arm_index]
-print(f"Best arm is {best_arm_index} (p={best_arm_prob})")
 
 num_sim = 10
 horizon = 500
@@ -25,6 +24,7 @@ with open("algorithms/thompson/thompson_results.tsv", "w") as f_detail, \
      open("algorithms/thompson/thompson_regret.tsv", "w") as f_summary:
 
     # Write headers
+    f_detail.write(f"Best arm is {best_arm_index} (p={best_arm_prob})\n")
     f_detail.write("sim\tt\tarm\treward\tcum_reward\n")
     f_summary.write("sim\treg_pct\n")
 
