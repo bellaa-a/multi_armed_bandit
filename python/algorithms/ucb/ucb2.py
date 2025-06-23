@@ -56,7 +56,7 @@ class UCB2(object):
     
     ucb_values = [0.0 for arm in range(n_arms)]
     total_counts = sum(self.counts)
-    for arm in xrange(n_arms):
+    for arm in range(n_arms):
       bonus = self.__bonus(total_counts, self.r[arm])
       ucb_values[arm] = self.values[arm] + bonus
     

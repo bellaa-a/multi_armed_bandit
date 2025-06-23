@@ -18,6 +18,7 @@ best_arm_prob = probs[best_arm_index]  # Use the probability directly
 print(f"Best arm is {best_arm_index} (p={best_arm_prob})")
 
 num_sim = 2
+horizon = 500
 
 # Open both files
 with open("algorithms/epsilon_greedy/standard_results.tsv", "w") as f_detail, \
@@ -30,7 +31,7 @@ with open("algorithms/epsilon_greedy/standard_results.tsv", "w") as f_detail, \
     for epsilon in [0.1, 0.2, 0.3, 0.4, 0.5]:
         algo = EpsilonGreedy(epsilon, [], [])
         algo.initialize(n_arms)
-        results = test_algorithm(algo, arms, num_sim, 5000)
+        results = test_algorithm(algo, arms, num_sim, horizon)
         
         # Track regret per simulation
         sim_regrets = []

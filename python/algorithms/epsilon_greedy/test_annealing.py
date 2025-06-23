@@ -18,6 +18,7 @@ best_arm_prob = probs[best_arm_index]
 print(f"Best arm is {best_arm_index} (p={best_arm_prob})")
 
 num_sim = 10
+horizon = 500
 
 with open("algorithms/epsilon_greedy/annealing_regret.tsv", "w") as f_summary, \
      open("algorithms/epsilon_greedy/annealing_results.tsv", "w") as f_detail:
@@ -29,7 +30,7 @@ with open("algorithms/epsilon_greedy/annealing_regret.tsv", "w") as f_summary, \
     # Run annealing algorithm
     algo = AnnealingEpsilonGreedy([], [])
     algo.initialize(n_arms)
-    results = test_algorithm(algo, arms, num_sim, 5000)
+    results = test_algorithm(algo, arms, num_sim, horizon)
     
     sim_regrets = []
     
