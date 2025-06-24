@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 # Test configurations
 epsilons = [0.1, 0.2, 0.3, 0.4, 0.5]
 alphas_ucb2 = [0.1, 0.3, 0.5, 0.7, 0.9]
-num_sim = 10
+num_sim = 1000
 horizon = 500
 
 # Store results
