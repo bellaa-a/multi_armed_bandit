@@ -29,7 +29,7 @@ def run_thompson(seed=1, num_sim=10, horizon=500, num_arms=5, arm_type="bernoull
         f_summary.write("sim\treg_pct\n")
 
         # Initialize and run algorithm
-        algo = ThompsonSampling([], [])
+        algo = ThompsonSampling([], [], arm_type)
         algo.initialize(num_arms)
         results = test_algorithm(algo, arms, num_sim, horizon)
         

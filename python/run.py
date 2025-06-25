@@ -8,17 +8,22 @@ import pandas as pd
 # Define all test configurations
 configs = [
     {'name': 'Baseline (2:200)', 'num_arms': 2, 'horizon': 200},
-    {'name': 'Small Problem (5:500)', 'num_arms': 5, 'horizon': 500},
-    {'name': 'Few Arms/Long Horizon (5:10,000)', 'num_arms': 5, 'horizon': 10000},
-    {'name': 'Medium Problem (10:2,000)', 'num_arms': 10, 'horizon': 2000},
-    {'name': 'Many Arms/Short Horizon (50:1,000)', 'num_arms': 50, 'horizon': 1000}
+    # {'name': 'Small Problem (5:500)', 'num_arms': 5, 'horizon': 500},
+    # {'name': 'Few Arms/Long Horizon (5:10,000)', 'num_arms': 5, 'horizon': 10000},
+    # {'name': 'Medium Problem (10:2,000)', 'num_arms': 10, 'horizon': 2000},
+    # {'name': 'Many Arms/Short Horizon (50:1,000)', 'num_arms': 50, 'horizon': 1000}
 ]
-arm_type = "normal"  # or "bernoulli"
 
 # Algorithm parameters
 epsilons = [0.1, 0.2, 0.3, 0.4, 0.5]
 alphas_ucb2 = [0.1, 0.3, 0.5, 0.7, 0.9]
-num_sim = 300
+seed = 1
+num_sim = 100
+arm_type = "normal"  # "normal" or "bernoulli"
+if arm_type == "normal":
+    ts_prior = "NormalGamma(μ₀=0, λ=1, α=1, β=1)"
+elif arm_type == "bernoulli":
+    ts_prior = "beta(1,1)"
 
 # Open output file with UTF-8 encoding
 output_filename = f"{arm_type}_output.txt"
@@ -36,7 +41,7 @@ with open(output_filename, 'w', encoding='utf-8') as f_out:
         # ε-Greedy (Standard)
         for eps in epsilons:
             regret, best_arm, confidence, actual_best_arm = run_standard_epsilon(
-                seed=1, num_sim=num_sim, 
+                seed=seed, num_sim=num_sim, 
                 horizon=horizon, num_arms=num_arms, 
                 epsilon=eps,
                 arm_type=arm_type
@@ -53,7 +58,7 @@ with open(output_filename, 'w', encoding='utf-8') as f_out:
         
         # ε-Greedy (Annealing)
         regret, best_arm, confidence, actual_best_arm = run_annealing_epsilon(
-            seed=1, num_sim=num_sim, 
+            seed=seed, num_sim=num_sim, 
             horizon=horizon, num_arms=num_arms,
             arm_type=arm_type
         )
@@ -69,7 +74,7 @@ with open(output_filename, 'w', encoding='utf-8') as f_out:
         
         # UCB1
         regret, best_arm, confidence, actual_best_arm = run_ucb1(
-            seed=1, num_sim=num_sim, 
+            seed=seed, num_sim=num_sim, 
             horizon=horizon, num_arms=num_arms,
             arm_type=arm_type
         )
@@ -86,7 +91,7 @@ with open(output_filename, 'w', encoding='utf-8') as f_out:
         # UCB2
         for alpha in alphas_ucb2:
             regret, best_arm, confidence, actual_best_arm = run_ucb2(
-                seed=1, num_sim=num_sim, 
+                seed=seed, num_sim=num_sim, 
                 horizon=horizon, num_arms=num_arms, 
                 alpha=alpha,
                 arm_type=arm_type
@@ -103,13 +108,13 @@ with open(output_filename, 'w', encoding='utf-8') as f_out:
         
         # Thompson Sampling
         regret, best_arm, confidence, actual_best_arm = run_thompson(
-            seed=1, num_sim=num_sim, 
+            seed=seed, num_sim=num_sim, 
             horizon=horizon, num_arms=num_arms,
             arm_type=arm_type
         )
         results.append({
             'Algorithm': 'Thompson',
-            'Param': 'Beta(1,1)',
+            'Param': ts_prior,
             'Regret%': regret,
             'Found': best_arm,
             'Best': actual_best_arm,

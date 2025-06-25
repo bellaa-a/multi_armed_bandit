@@ -6,7 +6,8 @@ def ind_max(x):
 def setup_bernoulli_arms(num_arms, horizon):
     # Baseline case (2 arms)
     if num_arms == 2 and horizon == 200:
-        probs = [0.3, 0.7]
+        # probs = [0.3, 0.7]
+        probs = [0.45, 0.55]
     
     # Small problem (5 arms)
     elif num_arms == 5 and horizon == 500:
@@ -38,7 +39,8 @@ def setup_normal_arms(num_arms, horizon):
     
     # Baseline case (2 arms)
     if num_arms == 2 and horizon == 200:
-        means = [0.0, 1.0]  # One arm at 0, another at 1
+        # means = [0.0, 1.0]  # One arm at 0, another at 1
+        means = [0.5, 0.6]
     
     # Small problem (5 arms)
     elif num_arms == 5 and horizon == 500:
