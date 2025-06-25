@@ -32,6 +32,39 @@ def setup_bernoulli_arms(num_arms, horizon):
     
     return [BernoulliArm(p) for p in probs], probs
 
+def setup_normal_arms(num_arms, horizon):
+    # Common standard deviation for all arms (can be modified if needed)
+    sigma = 1.0
+    
+    # Baseline case (2 arms)
+    if num_arms == 2 and horizon == 200:
+        means = [0.0, 1.0]  # One arm at 0, another at 1
+    
+    # Small problem (5 arms)
+    elif num_arms == 5 and horizon == 500:
+        means = [-1.0, -0.5, 0.0, 0.5, 1.0]  # Evenly spaced means
+    
+    # Few arms, long horizon (5 arms)
+    elif num_arms == 5 and horizon == 10000:
+        means = [-0.1, -0.05, 0.0, 0.05, 0.1]  # Very close means for challenging long horizon
+    
+    # Medium problem (10 arms)
+    elif num_arms == 10 and horizon == 2000:
+        means = list(np.linspace(-1.5, 1.5, 9)) + [2.5]  # One clearly optimal arm
+    
+    # Many arms, short horizon (50 arms)
+    elif num_arms == 50 and horizon == 1000:
+        means = list(np.linspace(-2.0, 2.0, 49)) + [3.0]  # One optimal arm
+        means[-1] = 4.0  # Make the last arm clearly optimal
+    
+    else:
+        raise ValueError(f"Unsupported (num_arms, horizon) combination: ({num_arms}, {horizon})")
+    
+    # Shuffle the means while keeping track of their original values
+    random.shuffle(means)
+    
+    return [NormalArm(mu, sigma) for mu in means], means
+
 # Need access to random numbers
 import random
 import numpy as np
