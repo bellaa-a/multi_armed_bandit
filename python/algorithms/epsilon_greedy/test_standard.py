@@ -5,22 +5,9 @@ import numpy as np
 from core import *
 import random
 
-def run_standard_epsilon(seed, num_sim, horizon, epsilon):
-    """Run epsilon-greedy bandit experiment for a given epsilon and return average regret percentage.
-    
-    Args:
-        seed (int): Random seed for reproducibility
-        epsilon (float): Exploration rate (0.0 to 1.0)
-        num_sim (int): Number of simulations
-        horizon (int): Time horizon for each simulation
-    Returns:
-        float: Average regret percentage across simulations
-    """
+def run_standard_epsilon(seed=1, num_sim=10, horizon=500, num_arms=5, epsilon=0.1):
     random.seed(seed)
-    probs = [0.1, 0.1, 0.1, 0.1, 0.9] 
-    n_arms = len(probs)
-    random.shuffle(probs)
-    arms = [BernoulliArm(p) for p in probs]
+    arms, probs = setup_arms(num_arms, horizon)
 
     # Get best arm's probability
     best_arm_index = ind_max(probs)
@@ -28,15 +15,15 @@ def run_standard_epsilon(seed, num_sim, horizon, epsilon):
 
     # Initialize algorithm
     algo = EpsilonGreedy(epsilon, [], [])
-    algo.initialize(n_arms)
+    algo.initialize(num_arms)
     results = test_algorithm(algo, arms, num_sim, horizon)
 
     # Track total regret across simulations
     total_regret_pct = 0.0
 
-    # Open files for writing (optional)
-    with open("algorithms/epsilon_greedy/standard_results.tsv", "w") as f_detail, \
-         open("algorithms/epsilon_greedy/standard_regret.tsv", "w") as f_summary:
+    # Open files for writing 
+    with open("algorithms/epsilon_greedy/standard_results.csv", "w") as f_detail, \
+         open("algorithms/epsilon_greedy/standard_regret.csv", "w") as f_summary:
 
         # Write headers
         f_detail.write(f"Best arm is {best_arm_index} (p={best_arm_prob})\n")
@@ -51,8 +38,8 @@ def run_standard_epsilon(seed, num_sim, horizon, epsilon):
             regret_pct = max(0, (optimal_reward - actual_reward) / optimal_reward * 100)
             total_regret_pct += regret_pct
 
-            # Write to files (optional)
-            f_summary.write(f"{epsilon}\t{sim}\t{regret_pct:.2f}\n")
+            # # Write to files (optional)
+            # f_summary.write(f"{epsilon}\t{sim}\t{regret_pct:.2f}\n")
             for i in range(len(results[0])):
                 if results[0][i] == sim:
                     f_detail.write(f"{epsilon}\t")
@@ -62,3 +49,5 @@ def run_standard_epsilon(seed, num_sim, horizon, epsilon):
     # Calculate average regret percentage
     avg_regret_pct = total_regret_pct / num_sim
     return avg_regret_pct
+
+run_standard_epsilon()

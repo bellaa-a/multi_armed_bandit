@@ -7,35 +7,18 @@ from core import *
 import random
 import os
 
-def run_ucb1(seed=1, num_sim=10, horizon=500):
-    """
-    Run UCB1 experiment with file outputs and return average regret.
-    
-    Args:
-        seed (int): Random seed
-        num_sim (int): Number of simulations
-        horizon (int): Time horizon
-        
-    Returns:
-        float: Average regret percentage across simulations
-    """
+def run_ucb1(seed=1, num_sim=10, horizon=500, num_arms=5):
     random.seed(seed)
-    probs = [0.1, 0.1, 0.1, 0.1, 0.9]
-    n_arms = len(probs)
-    random.shuffle(probs)
-    arms = [BernoulliArm(p) for p in probs]
+    arms, probs = setup_arms(num_arms, horizon)
 
-    # Get best arm
+    # Get best arm's probability
     best_arm_index = ind_max(probs)
     best_arm_prob = probs[best_arm_index]
 
-    # Ensure output directory exists
-    os.makedirs("algorithms/ucb", exist_ok=True)
-
     total_regret = 0.0
     
-    with open("algorithms/ucb/ucb1_results.tsv", "w") as f_detail, \
-         open("algorithms/ucb/ucb1_regret.tsv", "w") as f_summary:
+    with open("algorithms/ucb/ucb1_results.csv", "w") as f_detail, \
+         open("algorithms/ucb/ucb1_regret.csv", "w") as f_summary:
 
         # Write headers
         f_detail.write(f"Best arm is {best_arm_index} (p={best_arm_prob})\n")
@@ -44,7 +27,7 @@ def run_ucb1(seed=1, num_sim=10, horizon=500):
 
         # Run algorithm
         algo = UCB1([], [])
-        algo.initialize(n_arms)
+        algo.initialize(num_arms)
         results = test_algorithm(algo, arms, num_sim, horizon)
         
         # Process results
@@ -58,9 +41,11 @@ def run_ucb1(seed=1, num_sim=10, horizon=500):
             # Write to summary file
             f_summary.write(f"{sim}\t{regret_pct:.2f}\n")
 
-        # Write all detailed results
-        for i in range(len(results[0])):
-            f_detail.write("\t".join(str(results[j][i]) for j in range(len(results))))
-            f_detail.write("\n")
+        # # Write all detailed results
+        # for i in range(len(results[0])):
+        #     f_detail.write("\t".join(str(results[j][i]) for j in range(len(results))))
+        #     f_detail.write("\n")
 
     return total_regret / num_sim  # Average regret percentage
+
+run_ucb1()

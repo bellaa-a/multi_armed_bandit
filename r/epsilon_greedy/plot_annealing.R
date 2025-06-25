@@ -1,7 +1,7 @@
 library("plyr")
 library("ggplot2")
 
-results <- read.csv("julia/algorithms/epsilon_greedy/annealing_results.csv", header = FALSE)
+results <- read.csv("python/algorithms/epsilon_greedy/annealing_results.csv", header = FALSE)
 names(results) <- c("Sim", "T", "ChosenArm", "Reward", "CumulativeReward")
 
 # Plot average reward as a function of time.

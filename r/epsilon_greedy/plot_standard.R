@@ -1,7 +1,7 @@
 library("plyr")
 library("ggplot2")
 
-results <- read.csv("julia/algorithms/epsilon_greedy/standard_results.csv", header = FALSE)
+results <- read.csv("python/algorithms/epsilon_greedy/standard_results.csv", header = FALSE)
 names(results) <- c("Epsilon", "Sim", "T", "ChosenArm", "Reward", "CumulativeReward")
 results <- transform(results, Epsilon = factor(Epsilon))
 
