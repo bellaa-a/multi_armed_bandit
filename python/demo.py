@@ -1,4 +1,6 @@
 from core import * # replaced with python 3 alternative
+import pandas as pd
+from tabulate import tabulate
 
 arm1 = BernoulliArm(0.7)
 arm1.draw()
@@ -45,7 +47,7 @@ algo4.weights
 
 num_sims = 1000
 horizon = 10
-results = test_algorithm(algo1, arms, num_sims, horizon)
+results = test_algorithm(algo1, arms, num_sims, horizon) # switch algo here
 
 # plot results
 import matplotlib.pyplot as plt
